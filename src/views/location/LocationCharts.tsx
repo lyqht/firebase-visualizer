@@ -4,7 +4,8 @@ import {
     VictoryBar,
     VictoryChart,
     VictoryLabel,
-    VictoryTheme
+    VictoryTheme,
+    VictoryContainer
 } from "victory";
 import {
     convertDataForBarChart,
@@ -12,6 +13,7 @@ import {
 } from "../../helpers/dataFilterUtils";
 import { LocationProps } from "../LocationSection";
 import { CSSProperties } from "../styles";
+import { number } from "prop-types";
 
 export class LocationCharts extends PureComponent<LocationProps> {
     render() {
@@ -71,45 +73,52 @@ const Chart = (
 ) => {
     let gridItemContainerStyle = {};
     let tickStyle = {};
-    let paddingStyle = {};
+    let victoryContainerWidth = 400;
+    let victoryContainerHeight = 350;
     if (size === Size.small) {
-        gridItemContainerStyle = chartStyles.gridSmallItem;
-        tickStyle = chartStyles.bigText;
-        paddingStyle = {
-            top: 40,
-            bottom: 50,
-            left: 120,
-            right: 40
-        };
+        gridItemContainerStyle = smallChartStyles.gridItem;
+        tickStyle = smallChartStyles.text;
     } else {
-        gridItemContainerStyle = chartStyles.gridBigItem;
-        tickStyle = chartStyles.smallText;
-        paddingStyle = {
-            top: 40,
-            bottom: 50,
-            left: 120,
-            right: 40
-        };
+        gridItemContainerStyle = bigChartStyles.gridItem;
+        tickStyle = bigChartStyles.text;
+        victoryContainerWidth = 600;
     }
+    let numUsers = 0;
+    locationCounts.forEach(count => {
+        numUsers += Number(count);
+    });
+    const tickValues = [...Array(numLocations).keys()].map(i => i + 1);
     return (
         <div style={gridItemContainerStyle}>
             <VictoryChart
                 theme={VictoryTheme.material}
-                padding={paddingStyle}
+                padding={{
+                    top: 40,
+                    bottom: 50,
+                    left: 180,
+                    right: 0
+                }}
                 style={{
                     parent: gridItemContainerStyle
                 }}
                 domainPadding={20}
+                containerComponent={
+                    <VictoryContainer
+                        responsive={false}
+                        width={victoryContainerWidth}
+                        height={victoryContainerHeight}
+                    />
+                }
             >
                 <VictoryAxis
-                    tickValues={[...Array(numLocations).keys()].slice(1)}
+                    tickValues={tickValues}
                     tickFormat={locationNameTicks}
                     tickLabelComponent={<VictoryLabel style={tickStyle} />}
                 />
                 <VictoryAxis
                     dependentAxis
                     tickValues={[...Array(maxCount).keys()]}
-                    label={section}
+                    label={`${section} (${numUsers})`}
                     tickLabelComponent={
                         <VictoryLabel style={{ display: "none" }} />
                     }
@@ -131,30 +140,31 @@ const Chart = (
 
 const chartStyles: CSSProperties = {
     gridContainer: {
-        display: "grid",
-        justifyContent: "center",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gridTemplateRows: "300px 300px",
-        margin: "auto",
-        height: "calc(100vh - 10px)"
-    },
-    gridSmallItem: {
-        maxWidth: "100%",
-        maxHeight: "100%"
-    },
-    smallText: {
-        fontSize: "8"
-    },
-    bigText: {
+        display: "flex",
+        flex: "1",
+        flexFlow: "row wrap",
+        justifyContent: "flex-start",
+        height: "800",
+        margin: "12px"
+        // display: "grid",
+        // justifyContent: "center",
+        // gridTemplateColumns: "1fr 1fr 1fr",
+        // gridTemplateRows: "300px 300px",
+        // margin: "12px",
+        // height: "calc(100vh - 10px)"
+    }
+};
+
+const bigChartStyles: CSSProperties = {
+    gridItem: {},
+    text: {
         fontSize: "12"
-    },
-    bigPadding: {},
-    gridBigItem: {
-        gridColumn: "span 3",
-        maxWidth: "100%"
-    },
-    gridItemContainer: {
-        maxWidth: "100%",
-        maxHeight: "100%"
+    }
+};
+
+const smallChartStyles: CSSProperties = {
+    gridItem: {},
+    text: {
+        fontSize: "12"
     }
 };
