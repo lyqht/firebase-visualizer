@@ -44,7 +44,6 @@ class FirebaseUtils implements FirebaseQueries {
         this.data = Object.keys(records).map(
             item => records[item] as FirebaseEntry
         );
-        // console.log(records);
         return records;
     };
 
@@ -60,7 +59,6 @@ class FirebaseUtils implements FirebaseQueries {
                 item => records[item] as FirebaseEntry
             );
         }
-        console.log(this.data.length);
         return this.data.length;
     };
 
@@ -93,7 +91,6 @@ class FirebaseUtils implements FirebaseQueries {
                 });
             }
         });
-        console.log(activePageMap);
         return activePageMap;
     };
 }
