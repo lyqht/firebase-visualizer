@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
-import * as fs from "fs";
-import { clientEmail, privateKey, projectId, databaseURL } from "../AppConfig";
-import { UserRecord, firebaseEnvs, FirebaseEntry, MOLEnvs } from "./UserRecord";
+import { clientEmail, databaseURL, privateKey, projectId } from "../AppConfig";
+import { generateJson } from "../helpers/fileUtils";
+import { FirebaseEntry, UserRecord } from "./UserRecord";
 
 // const credential: admin.credential.Credential = admin.credential.applicationDefault()
 
@@ -44,12 +44,8 @@ class FirebaseUtils implements FirebaseQueries {
         this.data = Object.keys(records).map(
             item => records[item] as FirebaseEntry
         );
+        generateJson("firebase_data.json", records);
         return records;
-    };
-
-    public generateJson = () => {
-        const json = JSON.stringify(this.data, null, 4);
-        fs.writeFileSync("data.json", json, "utf8");
     };
 
     public getNumberOfUsers = async () => {
@@ -86,7 +82,7 @@ class FirebaseUtils implements FirebaseQueries {
                 const mol_envs = Object.keys(entry);
                 mol_envs.forEach(key => {
                     const record: UserRecord = entry[key];
-                    const pagePath = getCurrentPage(record);
+                    let pagePath = getCurrentPage(record);
                     addToMap(pagePath);
                 });
             }
@@ -102,4 +98,3 @@ const getCurrentPage = (record: UserRecord) => {
 };
 
 export const firebaseUtils = new FirebaseUtils();
-firebaseUtils.getActivePageLocationStats();
