@@ -17,10 +17,12 @@ import { CSSProperties } from "../styles";
 export class LocationCharts extends PureComponent<LocationProps> {
     render() {
         const { locationStats } = this.props;
+        console.log(locationStats);
         const data: CategoryData = convertDataForBarChart(locationStats);
         return (
             <div style={chartStyles.gridContainer}>
                 {Object.keys(data).map((section: string, index: number) => {
+                    console.log(section);
                     let locationNameTicks = [];
                     let locationCounts = [];
                     data[section].forEach(element => {
@@ -29,7 +31,7 @@ export class LocationCharts extends PureComponent<LocationProps> {
                     });
                     const numLocations = data[section].length;
                     const maxCount = Math.max(...locationCounts);
-                    if (numLocations < 8) {
+                    if (numLocations > 0 && numLocations < 8) {
                         return Chart(
                             Size.small,
                             data,
@@ -39,7 +41,7 @@ export class LocationCharts extends PureComponent<LocationProps> {
                             locationCounts,
                             maxCount
                         );
-                    } else {
+                    } else if (numLocations > 8) {
                         return Chart(
                             Size.big,
                             data,
@@ -131,6 +133,11 @@ const Chart = (
                     y="count"
                     labels={locationCounts}
                     labelComponent={<VictoryLabel style={tickStyle} />}
+                    animate={{
+                        duration: 2000,
+                        onLoad: { duration: 1000 },
+                        onEnter: { duration: 500, before: () => ({ y: 0 }) }
+                    }}
                 />
             </VictoryChart>
         </div>
@@ -145,12 +152,6 @@ const chartStyles: CSSProperties = {
         justifyContent: "flex-start",
         height: "800",
         margin: "12px"
-        // display: "grid",
-        // justifyContent: "center",
-        // gridTemplateColumns: "1fr 1fr 1fr",
-        // gridTemplateRows: "300px 300px",
-        // margin: "12px",
-        // height: "calc(100vh - 10px)"
     }
 };
 

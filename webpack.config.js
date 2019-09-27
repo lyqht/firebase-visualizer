@@ -14,11 +14,16 @@ const clientConfig = {
     },
     module: {
         rules: [
-            { test: /\.(js)$/, use: "babel-loader" },
-            { test: /\.css$/, use: ["style-loader", "css-loader"] },
+            { test: /\.(js)$/, use: "babel-loader", exclude: /node_modules/ },
+            {
+                test: /\.css$/,
+                use: ["style-loader", "css-loader"],
+                exclude: /node_modules/
+            },
             {
                 test: /\.tsx?$/,
-                loader: "awesome-typescript-loader"
+                loader: "awesome-typescript-loader",
+                exclude: /node_modules/
             }
         ]
     },
@@ -43,14 +48,15 @@ const serverConfig = {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: "awesome-typescript-loader"
+                loader: "awesome-typescript-loader",
+                exclude: /node_modules/
             }
         ]
     },
-    externals: {
-        fs: "commonjs fs",
-        path: "commonjs path"
-    },
+    // externals: {
+    //     fs: "commonjs fs",
+    //     path: "commonjs path"
+    // },
     externals: [nodeExternals()]
 };
 

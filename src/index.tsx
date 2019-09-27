@@ -1,7 +1,8 @@
+import Button from "@material-ui/core/Button";
+import Axios from "axios";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import HomeScreen from "./views/HomePage";
-import Axios from "axios";
 import { DetailViewMode } from "./views/LocationSection";
 
 interface Props {}
@@ -9,6 +10,7 @@ interface Props {}
 interface State {
     locationStats: any;
     userCount: any;
+    showNoChangeText: boolean;
 }
 
 class App extends Component<Props, State> {
@@ -16,32 +18,78 @@ class App extends Component<Props, State> {
         super(props);
         this.state = {
             locationStats: null,
-            userCount: null
+            userCount: null,
+            showNoChangeText: false
         };
     }
     componentDidMount = () => {
+        this.refreshContent();
+    };
+
+    refreshContent = () => {
+        console.log("Refreshed!");
         Axios.get("http://localhost:3000/data")
             .then(res => {
-                console.log(res.data);
                 const { locationStats, userCount } = res.data;
-                console.log(locationStats, userCount);
-                this.setState({
-                    locationStats,
-                    userCount
-                });
+
+                if (
+                    JSON.stringify(this.state.locationStats) !==
+                    JSON.stringify(locationStats)
+                ) {
+                    this.setState({
+                        locationStats,
+                        userCount
+                    });
+                } else {
+                    console.log("data has not changed.");
+                    this.setState({
+                        showNoChangeText: true
+                    });
+                }
             })
             .catch(err => {
                 console.log(err);
             });
     };
+
+    changeViewStyle = (DetailViewMode: DetailViewMode) => {};
+
     render() {
-        const { locationStats, userCount } = this.state;
+        const { locationStats, userCount, showNoChangeText } = this.state;
         return (
             <div>
-                <h1>hello</h1>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        alignContent: "center",
+                        justifyContent: "center",
+                        textAlign: "center"
+                    }}
+                >
+                    <p style={{ display: "inline", marginRight: 6 }}>
+                        {" "}
+                        Number of Users:
+                    </p>
+                    <h1 style={{ display: "inline", marginRight: 36 }}>
+                        {userCount}
+                    </h1>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => this.refreshContent()}
+                    >
+                        Refresh
+                    </Button>
+                </div>
+                {showNoChangeText && (
+                    <p style={{ textAlign: "center" }}>
+                        Note: No New data has been retrieved.
+                    </p>
+                )}
                 <HomeScreen
                     locationStats={locationStats}
-                    userCount={userCount}
                     detailViewMode={DetailViewMode.CHART_VIEW}
                 />
             </div>

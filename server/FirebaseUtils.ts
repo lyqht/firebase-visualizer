@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import { clientEmail, databaseURL, privateKey, projectId } from "./AppConfig";
-// import { generateJson } from "./helpers/fileUtils";
+import { generateJson } from "./helpers/fileUtils";
 import { FirebaseEntry, UserRecord } from "./UserRecord";
 
 interface FirebaseQueries {
@@ -9,6 +9,7 @@ interface FirebaseQueries {
 
 class FirebaseUtils implements FirebaseQueries {
     private data: FirebaseEntry[];
+    private db: admin.database.Database;
     private ref: admin.database.Reference;
 
     constructor() {
@@ -23,8 +24,8 @@ class FirebaseUtils implements FirebaseQueries {
             credential,
             databaseURL
         });
-        const db: admin.database.Database = app.database();
-        this.ref = db.ref("MOLAppState");
+        this.db = app.database();
+        this.ref = this.db.ref("MOLAppState");
     }
 
     public getAllRecords = async () => {
@@ -42,7 +43,7 @@ class FirebaseUtils implements FirebaseQueries {
         this.data = Object.keys(records).map(
             item => records[item] as FirebaseEntry
         );
-        // generateJson("firebase_data.json", records);
+        generateJson("firebase_data.json", records);
         return records;
     };
 
@@ -86,6 +87,14 @@ class FirebaseUtils implements FirebaseQueries {
             }
         });
         return activePageMap;
+    };
+
+    public getDB = () => {
+        return this.db;
+    };
+
+    public getRootRef = () => {
+        return this.ref;
     };
 }
 
