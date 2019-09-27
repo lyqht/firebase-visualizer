@@ -1,4 +1,4 @@
-import { generateJson } from "./fileUtils";
+// import { generateJson } from "../../server/helpers/fileUtils";
 
 /* Chart Related Interfaces */
 
@@ -101,7 +101,7 @@ export const convertDataForBarChart = (stats: Object) => {
             index: categoryIndexes[category]
         });
         categoryIndexes[category] += 1;
-        generateJson("filtered_data.json", data);
+        // generateJson("filtered_data.json", data);
     });
     return data;
 };

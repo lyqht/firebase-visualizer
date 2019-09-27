@@ -1,9 +1,7 @@
 import * as admin from "firebase-admin";
-import { clientEmail, databaseURL, privateKey, projectId } from "../AppConfig";
-import { generateJson } from "../helpers/fileUtils";
+import { clientEmail, databaseURL, privateKey, projectId } from "./AppConfig";
+// import { generateJson } from "./helpers/fileUtils";
 import { FirebaseEntry, UserRecord } from "./UserRecord";
-
-// const credential: admin.credential.Credential = admin.credential.applicationDefault()
 
 interface FirebaseQueries {
     getActivePageLocationStats: () => Promise<Object>;
@@ -44,7 +42,7 @@ class FirebaseUtils implements FirebaseQueries {
         this.data = Object.keys(records).map(
             item => records[item] as FirebaseEntry
         );
-        generateJson("firebase_data.json", records);
+        // generateJson("firebase_data.json", records);
         return records;
     };
 

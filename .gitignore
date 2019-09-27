@@ -3,3 +3,4 @@ node_modules
 firebase_data.json
 filtered_data.json
 worklog_screenshots
+dist

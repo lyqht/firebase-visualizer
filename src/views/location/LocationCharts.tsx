@@ -3,17 +3,16 @@ import {
     VictoryAxis,
     VictoryBar,
     VictoryChart,
+    VictoryContainer,
     VictoryLabel,
-    VictoryTheme,
-    VictoryContainer
+    VictoryTheme
 } from "victory";
 import {
-    convertDataForBarChart,
-    CategoryData
+    CategoryData,
+    convertDataForBarChart
 } from "../../helpers/dataFilterUtils";
 import { LocationProps } from "../LocationSection";
 import { CSSProperties } from "../styles";
-import { number } from "prop-types";
 
 export class LocationCharts extends PureComponent<LocationProps> {
     render() {
