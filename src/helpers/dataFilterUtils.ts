@@ -49,8 +49,6 @@ const CategoryKeywords: Keywords<CategoryData> = {
     Others: []
 };
 
-/* Filter functions for chart data */
-
 const getCategory = (name: string) => {
     if (name.includes("families")) {
         return Category.FAMILIES;
@@ -65,6 +63,8 @@ const getCategory = (name: string) => {
     }
     return Category.OTHERS;
 };
+
+/* Chart Data Filter Functions */
 
 export const removeCategoryFromName = (name: string, category: Category) => {
     let result = name;
@@ -102,5 +102,35 @@ export const convertDataForBarChart = (stats: Object) => {
         });
         categoryIndexes[category] += 1;
     });
+    return data;
+};
+
+/* Table Data Filter Functions */
+
+interface TableCell {
+    name: string;
+    count: number;
+    category: Category;
+}
+
+export type TableRow = Package<TableCell>;
+
+export const convertDataForTable = (stats: Object) => {
+    let data: TableRow[] = [];
+    Object.keys(stats).forEach(locationName => {
+        const count = stats[locationName];
+        let name = locationName.toLowerCase();
+        const category = getCategory(name);
+        name = removeCategoryFromName(name, category);
+
+        const newData: TableRow = {
+            name,
+            count,
+            category
+        };
+        console.log(newData);
+        data.push(newData);
+    });
+    console.log(data);
     return data;
 };

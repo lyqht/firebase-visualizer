@@ -1,13 +1,10 @@
 import React, { PureComponent } from "react";
 import { LocationCharts } from "./location/LocationCharts";
 import { LocationTables } from "./location/LocationTables";
+import { ViewModeProps } from "./ViewModeButtons";
 
 export interface LocationProps {
     locationStats: Object;
-}
-
-export interface ViewModeProps {
-    detailViewMode: DetailViewMode;
 }
 
 type Props = LocationProps & ViewModeProps;

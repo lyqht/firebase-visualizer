@@ -3,7 +3,7 @@ import Axios from "axios";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import HomeScreen from "./views/HomePage";
-import { DetailViewMode } from "./views/LocationSection";
+import { Typography } from "@material-ui/core";
 
 interface Props {}
 
@@ -52,8 +52,6 @@ class App extends Component<Props, State> {
             });
     };
 
-    changeViewStyle = (DetailViewMode: DetailViewMode) => {};
-
     render() {
         const { locationStats, userCount, showNoChangeText } = this.state;
         return (
@@ -68,30 +66,32 @@ class App extends Component<Props, State> {
                         textAlign: "center"
                     }}
                 >
-                    <p style={{ display: "inline", marginRight: 6 }}>
-                        {" "}
+                    <Typography
+                        variant="subtitle1"
+                        style={{ display: "inline", marginRight: 6 }}
+                    >
                         Number of Users:
-                    </p>
-                    <h1 style={{ display: "inline", marginRight: 36 }}>
+                    </Typography>
+                    <Typography
+                        variant="h3"
+                        style={{ display: "inline", marginRight: 24 }}
+                    >
                         {userCount}
-                    </h1>
+                    </Typography>
                     <Button
                         variant="contained"
-                        color="primary"
+                        color="secondary"
                         onClick={() => this.refreshContent()}
                     >
                         Refresh
                     </Button>
                 </div>
                 {showNoChangeText && (
-                    <p style={{ textAlign: "center" }}>
+                    <Typography variant="body1" style={{ textAlign: "center" }}>
                         Note: No New data has been retrieved.
-                    </p>
+                    </Typography>
                 )}
-                <HomeScreen
-                    locationStats={locationStats}
-                    detailViewMode={DetailViewMode.CHART_VIEW}
-                />
+                <HomeScreen locationStats={locationStats} />
             </div>
         );
     }

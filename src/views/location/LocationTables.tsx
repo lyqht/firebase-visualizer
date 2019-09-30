@@ -1,43 +1,26 @@
 import React, { PureComponent } from "react";
 import { LocationProps } from "../LocationSection";
 import { CSSProperties } from "../styles";
+import MaterialTable, { Query, Column } from "material-table";
+import { convertDataForTable } from "../../helpers/dataFilterUtils";
 
 export class LocationTables extends PureComponent<LocationProps> {
     render() {
         const { locationStats } = this.props;
+        const data = convertDataForTable(locationStats);
+        const columns = [
+            { title: "Name", field: "name" },
+            { title: "Count", field: "count" },
+            { title: "Category", field: "category" }
+        ];
         return (
-            <table style={tableStyles.table}>
-                <thead style={tableStyles.thead}>Location</thead>
-                <tbody>
-                    {Object.keys(locationStats).map((location, index) => {
-                        return (
-                            <tr key={index}>
-                                <td style={tableStyles.tdLabel}>{location}</td>
-                                <td style={tableStyles.tdValue}>
-                                    {locationStats[location]}
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+            <div>
+                <MaterialTable
+                    title="Page Path Locations"
+                    columns={columns}
+                    data={data as any}
+                />
+            </div>
         );
     }
 }
-
-const tableStyles: CSSProperties = {
-    thead: {
-        fontSize: "32"
-    },
-    table: {
-        backgroundColor: "#FFCA87",
-        padding: "16",
-        borderRadius: "8"
-    },
-    tdLabel: {
-        fontWeight: "bold"
-    },
-    tdValue: {
-        paddingLeft: "32"
-    }
-};

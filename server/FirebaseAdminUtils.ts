@@ -86,8 +86,11 @@ class FirebaseUtils implements FirebaseQueries {
                 });
             }
         });
+        console.log(activePageMap);
         return activePageMap;
     };
+
+    public getTableData = () => {};
 
     public getDB = () => {
         return this.db;

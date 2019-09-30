@@ -1,24 +1,38 @@
 import React, { PureComponent } from "react";
 import { CSSProperties } from "./styles";
 import { DetailViewMode } from "./LocationSection";
+import Button from "@material-ui/core/Button";
+import { Typography } from "@material-ui/core";
 
-export class DisplayModeButtons extends PureComponent {
+export interface ViewModeProps {
+    detailViewMode: DetailViewMode;
+}
+
+interface Props extends ViewModeProps {
+    onPress: (viewMode: DetailViewMode) => void;
+}
+
+export class ViewModeButtons extends PureComponent<Props> {
     render() {
         const viewModes: DetailViewMode[] = Object.values(DetailViewMode);
+        const { detailViewMode, onPress } = this.props;
         return (
             <div style={styles.buttonGroupContainer}>
-                <h5>View</h5>
                 {viewModes.map((mode, index) => {
                     return (
-                        <button
+                        <Button
                             key={index}
-                            style={styles.button}
-                            onKeyPress={() =>
-                                console.log("Changing to new view style")
+                            variant={
+                                detailViewMode === mode
+                                    ? "contained"
+                                    : "outlined"
                             }
+                            color="primary"
+                            size="small"
+                            onClick={() => onPress(mode as DetailViewMode)}
                         >
                             <p>{mode}</p>
-                        </button>
+                        </Button>
                     );
                 })}
             </div>
@@ -27,16 +41,8 @@ export class DisplayModeButtons extends PureComponent {
 }
 
 const styles: CSSProperties = {
-    button: {
-        textAlign: "center",
-        fontSize: "14",
-        backgroundColor: "#A4FF96",
-        padding: "16px",
-        borderRadius: "6px"
-    },
     buttonGroupContainer: {
-        margin: "16px",
-        padding: "8px",
-        flexDirection: "row"
+        flexDirection: "row",
+        marginBottom: "16px"
     }
 };

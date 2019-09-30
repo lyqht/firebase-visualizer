@@ -133,6 +133,7 @@ const Chart = (
                     y="count"
                     labels={locationCounts}
                     labelComponent={<VictoryLabel style={tickStyle} />}
+                    barWidth={12}
                     animate={{
                         duration: 2000,
                         onLoad: { duration: 1000 },
@@ -158,13 +159,13 @@ const chartStyles: CSSProperties = {
 const bigChartStyles: CSSProperties = {
     gridItem: {},
     text: {
-        fontSize: "12"
+        fontSize: "16"
     }
 };
 
 const smallChartStyles: CSSProperties = {
     gridItem: {},
     text: {
-        fontSize: "12"
+        fontSize: "16"
     }
 };
