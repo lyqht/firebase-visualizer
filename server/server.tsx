@@ -3,7 +3,8 @@ import Koa from "koa";
 import Router from "koa-router";
 import bodyparser from "koa-bodyparser";
 import json from "koa-json";
-import { firebaseUtils } from "./FirebaseUtils";
+import { firebaseUtils } from "./FirebaseAdminUtils";
+import { clientEmail, databaseURL, privateKey, projectId } from "./AppConfig";
 
 const app = new Koa();
 const router = new Router();
@@ -22,6 +23,15 @@ router.get("/data", async (ctx, next) => {
     const locationStats = await firebaseUtils.getActivePageLocationStats();
     const userCount = await firebaseUtils.getNumberOfUsers();
     ctx.body = { locationStats, userCount };
+    return next();
+});
+
+router.get("/fb-auth", async (ctx, next) => {
+    const credential = {
+        projectId,
+        apiKey: privateKey
+    };
+    ctx.body = { credential, databaseURL };
     return next();
 });
 
