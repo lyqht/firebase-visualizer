@@ -1,17 +1,16 @@
+import MaterialTable from "material-table";
 import React, { PureComponent } from "react";
+import { convertDataForTable, TableRow } from "../../helpers/dataFilterUtils";
 import { LocationProps } from "../LocationSection";
-import { CSSProperties } from "../styles";
-import MaterialTable, { Query, Column } from "material-table";
-import { convertDataForTable } from "../../helpers/dataFilterUtils";
 
 export class LocationTables extends PureComponent<LocationProps> {
     render() {
         const { locationStats } = this.props;
-        const data = convertDataForTable(locationStats);
+        const data: TableRow[] = convertDataForTable(locationStats);
         const columns = [
             { title: "Name", field: "name" },
             { title: "Count", field: "count" },
-            { title: "Category", field: "category" }
+            { title: "Category", field: "category", defaultGroupOrder: 0 }
         ];
         return (
             <div>
@@ -19,6 +18,9 @@ export class LocationTables extends PureComponent<LocationProps> {
                     title="Page Path Locations"
                     columns={columns}
                     data={data as any}
+                    options={{
+                        grouping: true
+                    }}
                 />
             </div>
         );

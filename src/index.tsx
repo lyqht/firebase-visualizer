@@ -87,8 +87,11 @@ class App extends Component<Props, State> {
                     </Button>
                 </div>
                 {showNoChangeText && (
-                    <Typography variant="body1" style={{ textAlign: "center" }}>
-                        Note: No New data has been retrieved.
+                    <Typography
+                        variant="body1"
+                        style={{ textAlign: "center", color: "#303F9F" }}
+                    >
+                        No New data has been retrieved.
                     </Typography>
                 )}
                 <HomeScreen locationStats={locationStats} />
