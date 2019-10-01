@@ -128,9 +128,7 @@ export const convertDataForTable = (stats: Object) => {
             count,
             category
         };
-        console.log(newData);
         data.push(newData);
     });
-    console.log(data);
     return data;
 };

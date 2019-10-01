@@ -18,6 +18,10 @@ interface State {
 
 const timeout = 2000;
 
+const objectChanged = (newObject: Object, oldObject: Object) => {
+    return JSON.stringify(newObject) !== JSON.stringify(oldObject);
+};
+
 class App extends Component<Props, State> {
     constructor(props: any) {
         super(props);
@@ -29,8 +33,7 @@ class App extends Component<Props, State> {
         };
     }
     componentDidMount = async () => {
-        await this.refreshContent();
-        this.checkForChanges();
+        await this.checkForChanges();
     };
 
     setStateForDataChange = () => {
@@ -40,40 +43,21 @@ class App extends Component<Props, State> {
 
     setStateForDataUnchanged = () => {
         this.setState({ showNoChangeText: true });
-        setTimeout(() => this.setState({ showChangeText: false }), timeout);
+        setTimeout(() => this.setState({ showNoChangeText: false }), timeout);
     };
 
-    refreshContent = async () => {
-        console.log("Refreshed!");
-        const res = await Axios.get("http://localhost:3000/fb-auth");
-        const { credential, databaseURL } = res.data;
-        const ref = firebaseService.getRef(credential, databaseURL);
-        const records = await firebaseService.getAllRecords(ref);
-        const locationStats = await firebaseService.getActivePageLocationStats(
-            records
-        );
-        const userCount = records.length;
-
-        if (
-            locationStats !== this.state.locationStats ||
-            userCount !== this.state.userCount
-        ) {
-            this.setState({ locationStats, userCount, showChangeText: true });
-            this.setStateForDataChange();
-        } else {
-            this.setStateForDataUnchanged();
+    checkForChanges = async () => {
+        let ref = firebaseService.getRef();
+        if (!ref) {
+            const res = await Axios.get("http://localhost:3000/fb-auth");
+            const { credential, databaseURL } = res.data;
+            ref = firebaseService.getRef(credential, databaseURL);
         }
-    };
-
-    checkForChanges = () => {
-        const ref = firebaseService.getRef();
         ref.on("value", async snapshot => {
             console.log("listener activating.");
             if (snapshot.val() != null) {
                 const firebaseData = snapshot.val();
-                console.log(firebaseData);
                 const records = Object.keys(firebaseData).map(item => {
-                    console.log(item);
                     return firebaseData[item] as FirebaseEntry;
                 });
                 const locationStats = await firebaseService.getActivePageLocationStats(
@@ -81,7 +65,7 @@ class App extends Component<Props, State> {
                 );
                 const userCount = records.length;
                 if (
-                    locationStats !== this.state.locationStats ||
+                    objectChanged(locationStats, this.state.locationStats) ||
                     userCount !== this.state.userCount
                 ) {
                     console.log("setting state upon a new event");
@@ -132,7 +116,7 @@ class App extends Component<Props, State> {
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => this.refreshContent()}
+                        onClick={() => this.checkForChanges()}
                     >
                         Refresh
                     </Button>
@@ -142,7 +126,7 @@ class App extends Component<Props, State> {
                         variant="body1"
                         style={{ textAlign: "center", color: "#303F9F" }}
                     >
-                        No New data has been retrieved.
+                        No new data has been retrieved.
                     </Typography>
                 )}
                 {showChangeText && (

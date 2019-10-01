@@ -12,7 +12,10 @@ import {
     convertDataForBarChart
 } from "../../helpers/dataFilterUtils";
 import { LocationProps } from "../LocationSection";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import { CSSProperties } from "../styles";
+import { calculateString } from "bytebuffer";
 
 export class LocationCharts extends PureComponent<LocationProps> {
     render() {
@@ -20,7 +23,13 @@ export class LocationCharts extends PureComponent<LocationProps> {
         console.log(locationStats);
         const data: CategoryData = convertDataForBarChart(locationStats);
         return (
-            <div style={chartStyles.gridContainer}>
+            <Grid
+                container
+                justify="flex-start"
+                alignItems="center"
+                spacing={3}
+                style={{ maxWidth: "100%", padding: 16 }}
+            >
                 {Object.keys(data).map((section: string, index: number) => {
                     console.log(section);
                     let locationNameTicks = [];
@@ -53,7 +62,7 @@ export class LocationCharts extends PureComponent<LocationProps> {
                         );
                     }
                 })}
-            </div>
+            </Grid>
         );
     }
 }
@@ -72,49 +81,48 @@ const Chart = (
     locationCounts: string[],
     maxCount: number
 ) => {
-    let gridItemContainerStyle = {};
-    let tickStyle = {};
-    let victoryContainerWidth = 400;
-    let victoryContainerHeight = 350;
-    if (size === Size.small) {
-        gridItemContainerStyle = smallChartStyles.gridItem;
-        tickStyle = smallChartStyles.text;
-    } else {
-        gridItemContainerStyle = bigChartStyles.gridItem;
-        tickStyle = bigChartStyles.text;
-        victoryContainerWidth = 600;
-    }
     let numUsers = 0;
     locationCounts.forEach(count => {
         numUsers += Number(count);
     });
+    let left = 0;
+    let xs_size = null;
+    let right = 0;
+    if (size === Size.small) {
+        left = 160;
+        xs_size = "3";
+    } else {
+        left = 250;
+        right = -120;
+        xs_size = "4";
+    }
     const tickValues = [...Array(numLocations).keys()].map(i => i + 1);
     return (
-        <div style={gridItemContainerStyle}>
+        <Grid item xs={xs_size as any}>
             <VictoryChart
                 theme={VictoryTheme.material}
                 padding={{
                     top: 40,
                     bottom: 50,
-                    left: 180,
-                    right: 0
+                    left,
+                    right
                 }}
-                style={{
-                    parent: gridItemContainerStyle
-                }}
+                style={{ parent: { paddingLeft: 120 } }}
                 domainPadding={20}
                 containerComponent={
                     <VictoryContainer
                         responsive={false}
-                        width={victoryContainerWidth}
-                        height={victoryContainerHeight}
+                        width={500}
+                        height={350}
                     />
                 }
             >
                 <VictoryAxis
                     tickValues={tickValues}
                     tickFormat={locationNameTicks}
-                    tickLabelComponent={<VictoryLabel style={tickStyle} />}
+                    tickLabelComponent={
+                        <VictoryLabel style={chartStyles.text} />
+                    }
                 />
                 <VictoryAxis
                     dependentAxis
@@ -123,7 +131,9 @@ const Chart = (
                     tickLabelComponent={
                         <VictoryLabel style={{ display: "none" }} />
                     }
-                    axisLabelComponent={<VictoryLabel dy={20} />}
+                    axisLabelComponent={
+                        <VictoryLabel style={{ fontSize: 16 }} dy={20} />
+                    }
                     fixLabelOverlap
                 />
                 <VictoryBar
@@ -132,7 +142,7 @@ const Chart = (
                     x="index"
                     y="count"
                     labels={locationCounts}
-                    labelComponent={<VictoryLabel style={tickStyle} />}
+                    labelComponent={<VictoryLabel style={chartStyles.text} />}
                     barWidth={12}
                     animate={{
                         duration: 2000,
@@ -141,31 +151,21 @@ const Chart = (
                     }}
                 />
             </VictoryChart>
-        </div>
+        </Grid>
     );
 };
 
 const chartStyles: CSSProperties = {
     gridContainer: {
         display: "flex",
-        flex: "1",
-        flexFlow: "row wrap",
+        flexGrow: 1,
+        flexWrap: "wrap",
         justifyContent: "flex-start",
         height: "800",
         margin: "12px"
-    }
-};
-
-const bigChartStyles: CSSProperties = {
-    gridItem: {},
+    },
     text: {
-        fontSize: "16"
-    }
-};
-
-const smallChartStyles: CSSProperties = {
-    gridItem: {},
-    text: {
-        fontSize: "16"
+        fontSize: "16",
+        fontFamily: "Roboto"
     }
 };
