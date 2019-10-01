@@ -14,6 +14,15 @@ class FirebaseService implements FirebaseQueries {
         console.log("Intializing Firebase App...");
     }
 
+    public getRef = (credential?, databaseURL?) => {
+        if (credential && databaseURL) {
+            const app = fb.initializeApp({ credential, databaseURL });
+            this.db = app.database();
+            this.ref = this.db.ref("MOLAppState");
+        }
+        return this.ref;
+    };
+
     public getAllRecords = async (ref: fb.database.Reference) => {
         const records: UserRecord[] = await ref
             .once("value", snapshot => {
@@ -30,10 +39,6 @@ class FirebaseService implements FirebaseQueries {
             item => records[item] as FirebaseEntry
         );
         return resultRecords;
-    };
-
-    public getNumberOfUsers = async (records: FirebaseEntry[]) => {
-        return records.length;
     };
 
     public getActivePageLocationStats = async (records: FirebaseEntry[]) => {

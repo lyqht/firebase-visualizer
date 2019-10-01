@@ -4,6 +4,8 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import HomeScreen from "./views/HomePage";
 import { Typography } from "@material-ui/core";
+import { firebaseService } from "../server/FirebaseClientUtils";
+import { FirebaseEntry } from "../server/UserRecord";
 
 interface Props {}
 
@@ -11,7 +13,10 @@ interface State {
     locationStats: any;
     userCount: any;
     showNoChangeText: boolean;
+    showChangeText: boolean;
 }
+
+const timeout = 2000;
 
 class App extends Component<Props, State> {
     constructor(props: any) {
@@ -19,41 +24,87 @@ class App extends Component<Props, State> {
         this.state = {
             locationStats: null,
             userCount: null,
-            showNoChangeText: false
+            showNoChangeText: false,
+            showChangeText: false
         };
     }
-    componentDidMount = () => {
-        this.refreshContent();
+    componentDidMount = async () => {
+        await this.refreshContent();
+        this.checkForChanges();
     };
 
-    refreshContent = () => {
-        console.log("Refreshed!");
-        Axios.get("http://localhost:3000/data")
-            .then(res => {
-                const { locationStats, userCount } = res.data;
+    setStateForDataChange = () => {
+        this.setState({ showChangeText: true });
+        setTimeout(() => this.setState({ showChangeText: false }), timeout);
+    };
 
+    setStateForDataUnchanged = () => {
+        this.setState({ showNoChangeText: true });
+        setTimeout(() => this.setState({ showChangeText: false }), timeout);
+    };
+
+    refreshContent = async () => {
+        console.log("Refreshed!");
+        const res = await Axios.get("http://localhost:3000/fb-auth");
+        const { credential, databaseURL } = res.data;
+        const ref = firebaseService.getRef(credential, databaseURL);
+        const records = await firebaseService.getAllRecords(ref);
+        const locationStats = await firebaseService.getActivePageLocationStats(
+            records
+        );
+        const userCount = records.length;
+
+        if (
+            locationStats !== this.state.locationStats ||
+            userCount !== this.state.userCount
+        ) {
+            this.setState({ locationStats, userCount, showChangeText: true });
+            this.setStateForDataChange();
+        } else {
+            this.setStateForDataUnchanged();
+        }
+    };
+
+    checkForChanges = () => {
+        const ref = firebaseService.getRef();
+        ref.on("value", async snapshot => {
+            console.log("listener activating.");
+            if (snapshot.val() != null) {
+                const firebaseData = snapshot.val();
+                console.log(firebaseData);
+                const records = Object.keys(firebaseData).map(item => {
+                    console.log(item);
+                    return firebaseData[item] as FirebaseEntry;
+                });
+                const locationStats = await firebaseService.getActivePageLocationStats(
+                    records
+                );
+                const userCount = records.length;
                 if (
-                    JSON.stringify(this.state.locationStats) !==
-                    JSON.stringify(locationStats)
+                    locationStats !== this.state.locationStats ||
+                    userCount !== this.state.userCount
                 ) {
+                    console.log("setting state upon a new event");
                     this.setState({
                         locationStats,
-                        userCount
+                        userCount,
+                        showChangeText: true
                     });
+                    this.setStateForDataChange();
                 } else {
-                    console.log("data has not changed.");
-                    this.setState({
-                        showNoChangeText: true
-                    });
+                    this.setStateForDataUnchanged();
                 }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+            }
+        });
     };
 
     render() {
-        const { locationStats, userCount, showNoChangeText } = this.state;
+        const {
+            locationStats,
+            userCount,
+            showNoChangeText,
+            showChangeText
+        } = this.state;
         return (
             <div>
                 <div
@@ -92,6 +143,14 @@ class App extends Component<Props, State> {
                         style={{ textAlign: "center", color: "#303F9F" }}
                     >
                         No New data has been retrieved.
+                    </Typography>
+                )}
+                {showChangeText && (
+                    <Typography
+                        variant="body1"
+                        style={{ textAlign: "center", color: "#303F9F" }}
+                    >
+                        New data has been retrieved.
                     </Typography>
                 )}
                 <HomeScreen locationStats={locationStats} />
