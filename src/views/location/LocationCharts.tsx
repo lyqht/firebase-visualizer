@@ -1,3 +1,4 @@
+import Grid from "@material-ui/core/Grid";
 import React, { PureComponent } from "react";
 import {
     VictoryAxis,
@@ -12,10 +13,7 @@ import {
     convertDataForBarChart
 } from "../../helpers/dataFilterUtils";
 import { LocationProps } from "../LocationSection";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import { CSSProperties } from "../styles";
-import { calculateString } from "bytebuffer";
 
 export class LocationCharts extends PureComponent<LocationProps> {
     render() {

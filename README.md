@@ -1,9 +1,3 @@
-- [Set up instructions](#set-up-instructions)
-  - [Features](#features)
-    - [Filtered Data](#filtered-data)
-    - [View Modes](#view-modes)
-    - [Firebase Listener](#firebase-listener)
-
 # Set up instructions
 
 1. Install the dependencies
@@ -21,21 +15,14 @@ yarn start
 
 ## Features
 
-Built with Firebase SDK for client view of database and Firebase Admin SDK for posting mock data to the database for previewing live changes.
-
-### Filtered Data
-
-Currently the data is filtered according to 4 categories, and the conditions of the pagePath name are:
-1. ActiveAging: includes "activeaging", "activeageing", "aa"
-2. Families: includes "families"
-3. Preschool: includes "ecda", "preschool"
-4. Others: everything else
+- Data: Built with Firebase SDK for client view of database and Firebase Admin SDK for posting mock data to the database for previewing live changes.
+- Design: Material Design
 
 ### View Modes
 
-2 view modes are available: 
-1. Chart View
-2. Table View
+| Table View | ![](worklog_screenshots/table_view.gif) |
+| ---------- | --------------------------------------- |
+| Chart View | ![](worklog_screenshots/chart_view.gif) |
 
 ### Firebase Listener
 
